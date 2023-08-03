@@ -19,11 +19,11 @@ func main(){
   //initial database with our config
   db,err := database.NewDB(newConfig.PGUrl)
   if err != nil{
-    log.Fatal("can't connect to database!!")
+    log.Fatal("can't connect to database!!",err)
   }
   // initial ginEngin
   r := gin.Default()
 
-  routes.UserRoutes(r)
-  r.Run(":8080") // listen and serve on 0.0.0.0:8080
+  routes.UserRoutes(r,db)
+  r.Run(":"+newConfig.Port) // listen and serve on 0.0.0.0:8080
 }

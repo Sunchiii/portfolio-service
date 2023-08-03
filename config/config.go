@@ -26,5 +26,5 @@ func NewConfig() (*Config,error){
     return nil,err
   }
 
-  return &Config{PGUrl: config.PGUrl},nil
+  return &Config{PGUrl: config.PGUrl,Port: config.Port},nil
 }
