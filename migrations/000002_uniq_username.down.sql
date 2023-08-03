@@ -1,1 +1,2 @@
-ALTER TABLE "user" DROP CONSTRAINT unique_column;
+ALTER TABLE user DROP CONSTRAINT unique_id;
+ALTER TABLE user DROP CONSTRAINT unique_username;
