@@ -4,14 +4,13 @@ import (
 	"log"
 	"net/http"
 
-	"fmt"
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 	"github.com/sunchiii/portfolio-service/api/models"
 	"github.com/sunchiii/portfolio-service/pkg/database"
 	"github.com/sunchiii/portfolio-service/pkg/utils"
-	"github.com/google/uuid"
 )
 
 type UserHandler struct{
@@ -45,27 +44,32 @@ func (users *UserHandler) CreateUserHandler(c *gin.Context) {
     errMsg := utils.InternalServerError("can't insert data to database or username already exit")
     log.Println(err)
     c.JSON(errMsg.Status,errMsg)
+    return
   }
 	// Return a success message
 	c.JSON(http.StatusCreated, gin.H{"message": "User created successfully"})
 }
 
-func getUserHandler(c *gin.Context) {
-	// Get the user ID from the request parameters
-	// userID := c.Param("id")
 
+
+func (users *UserHandler) GetUserHandler(c *gin.Context) {
+	// Get the user ID from the request parameters
+	userID := c.Param("id")
 	// Retrieve the user from the database or any other data source
-	// For demonstration purposes, let's assume we have a user with ID 1
-	user := models.User{
-		ID:        1,
-		Username:  "john",
-		Password:  "password",
-		CreatedAt: time.Now(),
-	}
+  
+  user,err := users.Db.GetUser(userID)
+  if err != nil{
+    errMsg := utils.InternalServerError("can't query data from database")
+    log.Println(errMsg.Message)
+    c.JSON(errMsg.Status,errMsg.Message)
+  }
 
 	// Return the user as JSON response
 	c.JSON(http.StatusOK, user)
 }
+
+
+
 func (users *UserHandler) GetUsersHandler(c *gin.Context) {
   user,err := users.Db.GetUsers()
   if err != nil{

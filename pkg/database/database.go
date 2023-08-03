@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"time"
+  "log"
 
 	_ "github.com/lib/pq"
 	"github.com/sunchiii/portfolio-service/api/models"
@@ -89,6 +90,25 @@ func (db *DB) GetUsers() ([]*User, error) {
 	}
 
 	return users, nil
+}
+func (db *DB) GetUser(_id string) (*User, error) {
+  var user User
+  // Prepare the SQL statement
+  stmt,err := db.Prepare("SELECT id, username,password,created_at FROM user WHERE id = ?")
+  if err != nil{
+    log.Println("can't prepare")
+    return nil,err
+  }
+  defer stmt.Close()
+
+  // Execute the query and retrieve the user data
+  err = stmt.QueryRow(_id).Scan(&user.ID, &user.Username,&user.Password, &user.CreatedAt)
+	if err != nil {
+    log.Println("can't execute command")
+		return nil, err
+	}
+
+  return &user,nil
 }
 
 func (db *DB) CreateArticle(article *Article) error {
