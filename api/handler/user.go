@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 
 	"fmt"
@@ -20,20 +21,34 @@ func NewUserHandler(db *database.DB)(UserHandler,error){
   return UserHandler{Db: db},nil
 }
 
-func createUserHandler(c *gin.Context) {
+func (users *UserHandler) CreateUserHandler(c *gin.Context) {
 	// Parse the request body to get the user data
 	var user models.User
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+  
+  newUser := models.User{
+    ID: user.CreatedAt.Unix(),
+    Username: user.Username,
+    Password: user.Password,
+    CreatedAt: time.Now(),
+  } 
+
 
 	// Save the user to the database or any other data source
-  fmt.Println(user)
+  fmt.Println(newUser)
 	// ...
 
+  err := users.Db.CreateUser(&newUser)
+  if err != nil {
+    errMsg := utils.InternalServerError("can't insert data to database")
+    log.Println(err)
+    c.JSON(errMsg.Status,errMsg)
+  }
 	// Return a success message
-	c.JSON(http.StatusOK, gin.H{"message": "User created successfully"})
+	c.JSON(http.StatusCreated, gin.H{"message": "User created successfully"})
 }
 
 func getUserHandler(c *gin.Context) {

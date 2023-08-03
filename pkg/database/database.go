@@ -6,6 +6,7 @@ import (
 	"time"
 
 	_ "github.com/lib/pq"
+	"github.com/sunchiii/portfolio-service/api/models"
 )
 
 type User struct {
@@ -53,12 +54,12 @@ func NewDB(dataSourceName string) (*DB, error) {
 	return &DB{db}, nil
 }
 
-func (db *DB) CreateUser(user *User) error {
+func (db *DB) CreateUser(user *models.User) error {
 	sqlStatement := `
-		INSERT INTO "user" (username, password, created_at)
-		VALUES ($1, $2, $3)
+		INSERT INTO "user" (id,username, password,created_at)
+		VALUES ($1, $2, $3, $4)
 		RETURNING id`
-	err := db.QueryRow(sqlStatement, user.Username, user.Password, user.CreatedAt).Scan(&user.ID)
+	err := db.QueryRow(sqlStatement,user.ID, user.Username, user.Password,user.CreatedAt).Scan(&user.ID)
 	if err != nil {
 		return err
 	}
