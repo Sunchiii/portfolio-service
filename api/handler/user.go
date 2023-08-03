@@ -30,6 +30,7 @@ func (users *UserHandler) CreateUserHandler(c *gin.Context) {
 		return
 	}
   
+  // prepare data befor insert to database
   newUser := models.User{
     ID: int64(uuid.New().ID()),
     Username: user.Username,
@@ -38,13 +39,10 @@ func (users *UserHandler) CreateUserHandler(c *gin.Context) {
   } 
 
 
-	// Save the user to the database or any other data source
-  fmt.Println(newUser)
-	// ...
-
+  // insert data to database
   err := users.Db.CreateUser(&newUser)
   if err != nil {
-    errMsg := utils.InternalServerError("can't insert data to database")
+    errMsg := utils.InternalServerError("can't insert data to database or username already exit")
     log.Println(err)
     c.JSON(errMsg.Status,errMsg)
   }
