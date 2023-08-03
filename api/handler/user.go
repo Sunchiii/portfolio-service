@@ -11,6 +11,7 @@ import (
 	"github.com/sunchiii/portfolio-service/api/models"
 	"github.com/sunchiii/portfolio-service/pkg/database"
 	"github.com/sunchiii/portfolio-service/pkg/utils"
+	"github.com/google/uuid"
 )
 
 type UserHandler struct{
@@ -30,7 +31,7 @@ func (users *UserHandler) CreateUserHandler(c *gin.Context) {
 	}
   
   newUser := models.User{
-    ID: user.CreatedAt.Unix(),
+    ID: int64(uuid.New().ID()),
     Username: user.Username,
     Password: user.Password,
     CreatedAt: time.Now(),
