@@ -69,6 +69,23 @@ func (db *DB) CreateUser(user *models.User) error {
 	return nil
 }
 
+func (db *DB) UpdateUser(user *models.User) error{
+  sqlStatement := `UPDATE "user" SET username = $2, password = $3 WHERE id = $1`
+  // prepare sql statement
+  stmt,err := db.Prepare(sqlStatement)
+  if err != nil{
+    return err
+  }
+  defer stmt.Close()
+
+  // execute statement 
+  _, err = stmt.Exec(user.ID,user.Username,user.Password)
+  if err != nil{
+    return err
+  }
+  return nil
+}
+
 func (db *DB) GetUsers() ([]*User, error) {
 	sqlStatement := `SELECT id, username, password, created_at FROM "user"`
 	rows, err := db.Query(sqlStatement)

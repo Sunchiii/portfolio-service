@@ -3,6 +3,7 @@ package handler
 import (
 	"log"
 	"net/http"
+	"strconv"
 
 	"time"
 
@@ -50,6 +51,57 @@ func (users *UserHandler) CreateUserHandler(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"message": "User created successfully"})
 }
 
+func (users *UserHandler) UpdateUserHandler(c *gin.Context) {
+  // get id from param
+  id,err := strconv.Atoi(c.Param("id"))
+  if err != nil{
+    errMsg := utils.BadRequestError("id should be number only")
+    c.JSON(errMsg.Status,errMsg.Message)
+  }
+  
+	// Parse the request body to get the user data
+	var user models.User
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+  // get user data
+  oldUser, err := users.Db.GetUser(strconv.Itoa(id))
+  if err != nil{
+    errMsg := utils.BadRequestError("does't exit")
+    c.JSON(errMsg.Status,errMsg.Message)
+    return
+  }
+  
+  // prepare data befor insert to database
+  newUser := models.User{
+    ID: int64(id),
+    Username: user.Username,
+    Password: user.Password,
+    CreatedAt: oldUser.CreatedAt,
+  } 
+
+  if user.Username == ""{
+    newUser.Username = oldUser.Username
+  }
+  if user.Password == ""{
+    newUser.Password = oldUser.Password
+  }
+
+
+
+  // insert data to database
+  err = users.Db.UpdateUser(&newUser)
+  if err != nil {
+    errMsg := utils.InternalServerError("can't update data to database")
+    log.Println(err)
+    c.JSON(errMsg.Status,errMsg)
+    return
+  }
+	// Return a success message
+	c.JSON(http.StatusCreated, gin.H{"message": "User created successfully"})
+}
 
 
 func (users *UserHandler) GetUserHandler(c *gin.Context) {
