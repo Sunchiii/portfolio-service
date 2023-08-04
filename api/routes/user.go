@@ -19,6 +19,7 @@ func UserRoutes(route *gin.Engine,db *database.DB){
     v1.GET("/user/:id",usersHandler.GetUserHandler)
     v1.POST("/user",usersHandler.CreateUserHandler)
     v1.PUT("/user/:id",usersHandler.UpdateUserHandler)
+    v1.DELETE("/user/:id",usersHandler.DeleteUserHandler)
   }
 }
 

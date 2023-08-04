@@ -136,13 +136,18 @@ func (users *UserHandler) GetUsersHandler(c *gin.Context) {
 }
 
 
-func deleteUserHandler(c *gin.Context) {
+func (users *UserHandler) DeleteUserHandler(c *gin.Context) {
 	// Get the user ID from the request parameters
-	// userID := c.Param("id")
+	userID := c.Param("id")
 
-	// Delete the user from the database or any other data source
-	// ...
-
+  // call database
+  err := users.Db.DeleteUser(userID)
+  if err != nil{
+    errMsg := utils.InternalServerError("something wrong in server")
+    log.Println(err)
+    c.JSON(errMsg.Status,errMsg.Message)
+    return
+  }
 	// Return a success message
 	c.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
 }

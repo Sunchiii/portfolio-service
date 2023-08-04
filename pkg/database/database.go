@@ -134,6 +134,23 @@ func (db *DB) GetUser(_id string) (*User, error) {
   return &user,nil
 }
 
+
+func (db *DB) DeleteUser(_id string) error{
+  // Prepare a SQL statement to delete the user with the given ID
+  stmt, err := db.Prepare(`DELETE FROM "user" WHERE id = $1`)
+  if err != nil {
+    return err
+  }
+  defer stmt.Close()
+  
+  // Execute the statement with the ID parameter
+  _, err = stmt.Exec(_id)
+  if err != nil {
+    return err
+  }
+  return nil
+}
+
 func (db *DB) CreateArticle(article *Article) error {
 	sqlStatement := `
 		INSERT INTO "article" (title, description, data, created_at)
