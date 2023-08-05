@@ -216,3 +216,24 @@ func (db *DB) GetArticles(page int, perPage int) (*ArticlesResponse, error) {
 
 	return response, nil
 }
+
+
+func (db *DB) GetArticle(_id string) (*models.Article, error) {
+  var article models.Article
+  // Prepare the SQL statement
+  stmt,err := db.Prepare(`SELECT title, description,data,created_at FROM "article" WHERE id = $1`)
+  if err != nil{
+    log.Println(err)
+    return nil,err
+  }
+  defer stmt.Close()
+
+  // Execute the query and retrieve the user data
+  err = stmt.QueryRow(_id).Scan(&article.Title,&article.Description,&article.Data,&article.CreatedAt)
+	if err != nil {
+    log.Println(err)
+		return nil, err
+	}
+
+  return &article,nil
+}

@@ -1,9 +1,9 @@
 package handler
 
 import (
-	"log"
 	"net/http"
 	"time"
+  "log"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -49,7 +49,6 @@ func (articledb ArticleHandler) CreateAtricle(c *gin.Context){
   }
 
   c.JSON(http.StatusCreated, gin.H{"message": "Article created successfully"})
-
 }
 
 func (articledb ArticleHandler) GetArticles(c *gin.Context){
@@ -64,3 +63,21 @@ func (articledb ArticleHandler) GetArticles(c *gin.Context){
 
   c.JSON(http.StatusOK,article)
 }
+
+func (articledb ArticleHandler) GetArticle(c *gin.Context){
+	// Get the user ID from the request parameters
+	articleID := c.Param("id")
+	// Retrieve the user from the database or any other data source
+  
+  article,err := articledb.Db.GetArticle(articleID)
+  if err != nil{
+    errMsg := utils.InternalServerError("can't query data from database")
+    log.Println(err)
+    c.JSON(errMsg.Status,errMsg.Message)
+    return
+  }
+
+	// Return the user as JSON response
+	c.JSON(http.StatusOK, article)
+}
+
