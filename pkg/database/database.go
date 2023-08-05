@@ -151,7 +151,7 @@ func (db *DB) DeleteUser(_id string) error{
   return nil
 }
 
-func (db *DB) CreateArticle(article *Article) error {
+func (db *DB) CreateArticle(article *models.Article) error {
 	sqlStatement := `
 		INSERT INTO "article" (title, description, data, created_at)
 		VALUES ($1, $2, $3, $4)
