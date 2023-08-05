@@ -15,6 +15,7 @@ func ArticleRoutes(route *gin.Engine,db *database.DB){
   }
   v1 := route.Group("/v1")
   {
+    v1.GET("/articles",articlesHandler.GetArticles)
     v1.POST("/article",articlesHandler.CreateAtricle)
   }
 }

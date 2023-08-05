@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 	"time"
 
@@ -49,4 +50,17 @@ func (articledb ArticleHandler) CreateAtricle(c *gin.Context){
 
   c.JSON(http.StatusCreated, gin.H{"message": "Article created successfully"})
 
+}
+
+func (articledb ArticleHandler) GetArticles(c *gin.Context){
+  // call database 
+  article, err := articledb.Db.GetArticles(1,10) 
+  if err != nil{
+    errMsg := utils.InternalServerError("can't get data from database")
+    log.Println(err)
+    c.JSON(errMsg.Status,errMsg.Message)
+    return
+  }
+
+  c.JSON(http.StatusOK,article)
 }
