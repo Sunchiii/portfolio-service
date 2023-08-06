@@ -1,18 +1,20 @@
 package main
 
 import (
+	"context"
 	"log"
-  "os"
-  "os/signal"
-  "syscall"
-  "time"
-  "context"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
+
+	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sunchiii/portfolio-service/api/middleware"
 	"github.com/sunchiii/portfolio-service/api/routes"
 	"github.com/sunchiii/portfolio-service/config"
 	"github.com/sunchiii/portfolio-service/pkg/database"
-  "net/http"
 )
 
 func main(){
@@ -30,6 +32,7 @@ func main(){
   }
   // initial ginEngin
   r := gin.Default()
+  r.Use(middleware.ContextWithTimeOut())
 
   routes.UserRoutes(r,db)
   routes.ArticleRoutes(r,db)
