@@ -16,6 +16,7 @@ import (
 )
 
 func main(){
+
   // initial config
   newConfig,err := config.NewConfig()
   if err != nil{
