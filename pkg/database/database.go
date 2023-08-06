@@ -255,3 +255,19 @@ func (db *DB) UpdateArticle(article *models.Article) error{
   return nil
 }
 
+func (db *DB) DeleteArticle(_id string) error{
+  // Prepare a SQL statement to delete the user with the given ID
+  stmt, err := db.Prepare(`DELETE FROM "article" WHERE id = $1`)
+  if err != nil {
+    return err
+  }
+  defer stmt.Close()
+  
+  // Execute the statement with the ID parameter
+  _, err = stmt.Exec(_id)
+  if err != nil {
+    return err
+  }
+  return nil
+}
+

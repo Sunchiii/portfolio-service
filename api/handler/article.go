@@ -139,3 +139,21 @@ func (articledb ArticleHandler) UpdateArticle(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"message": "User created successfully"})
 }
 
+
+
+func (articledb *ArticleHandler) DeleteArticle(c *gin.Context) {
+	// Get the user ID from the request parameters
+	articleID := c.Param("id")
+
+	// call database
+	err := articledb.Db.DeleteArticle(articleID)
+	if err != nil {
+		errMsg := utils.InternalServerError("something wrong in server")
+		log.Println(err)
+		c.JSON(errMsg.Status, errMsg.Message)
+		return
+	}
+	// Return a success message
+	c.JSON(http.StatusOK, gin.H{"message": "article deleted successfully"})
+}
+

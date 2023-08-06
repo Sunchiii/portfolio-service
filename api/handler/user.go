@@ -145,18 +145,3 @@ func (users *UserHandler) DeleteUserHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "User deleted successfully"})
 }
 
-func (articledb *ArticleHandler) GetArticleHandler(c *gin.Context) {
-	// Get the user ID from the request parameters
-	id := c.Param("id")
-	// Retrieve the user from the database or any other data source
-
-	article, err := articledb.Db.GetArticle(id)
-	if err != nil {
-		errMsg := utils.InternalServerError("can't query data from database")
-		log.Println(errMsg.Message)
-		c.JSON(errMsg.Status, errMsg.Message)
-	}
-
-	// Return the user as JSON response
-	c.JSON(http.StatusOK, article)
-}
