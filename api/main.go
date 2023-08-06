@@ -36,6 +36,7 @@ func main(){
 
   routes.UserRoutes(r,db)
   routes.ArticleRoutes(r,db)
+  routes.AuthRoutes(r,db)
   srv := &http.Server{
 		Addr:    ":"+newConfig.Port,
 		Handler: r,

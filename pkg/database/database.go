@@ -135,6 +135,23 @@ func (db *DB) GetUser(_id string) (*User, error) {
 }
 
 
+func (db *DB) GetUserByUsername(_username , _password string) (*User, error) {
+  var user User
+  // Prepare the SQL statement
+  sqlStatement := `SELECT id, username, password,created_at FROM "user" WHERE username = $1 AND password = $2`
+
+  // Execute the query and retrieve the user data
+  row := db.QueryRow(sqlStatement,_username,_password)
+
+  // recieve the user data
+  if err := row.Scan(&user.ID,&user.Username,&user.Password,&user.CreatedAt); err != nil{
+    return nil,err
+  }
+
+  return &user,nil
+}
+
+
 func (db *DB) DeleteUser(_id string) error{
   // Prepare a SQL statement to delete the user with the given ID
   stmt, err := db.Prepare(`DELETE FROM "user" WHERE id = $1`)
