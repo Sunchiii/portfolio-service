@@ -1,13 +1,25 @@
 package config
 
 import (
+	"fmt"
 	"io/ioutil"
+
 	"gopkg.in/yaml.v3"
 )
 
 type Config struct{
-  PGUrl string `yaml:"pg_url"`
   Port string `yaml:"port"`
+
+  PGUser string `yaml:"pg_user"`
+  PGPassword string `yaml:"pg_password"`
+  PGPort string `yaml:"pg_port"`
+  PGDatabase string `yaml:"pg_database"`
+  PGHost string `yaml:"pg_host"`
+}
+
+type ConfigResult struct{
+  PGUrl string
+  Port string
 }
 
 type PasetoConfig struct{
@@ -16,7 +28,7 @@ type PasetoConfig struct{
 }
 
 
-func NewConfig() (*Config,error){
+func NewConfig() (*ConfigResult,error){
   // read the env.yaml file
   data ,err := ioutil.ReadFile("env.yaml")
   if err != nil{
@@ -30,7 +42,9 @@ func NewConfig() (*Config,error){
     return nil,err
   }
 
-  return &Config{PGUrl: config.PGUrl,Port: config.Port},nil
+  pgUrl := fmt.Sprintf(`postgresql://%s:%s@%s:%s/%s?sslmode=disable`,config.PGUser,config.PGPassword,config.PGHost,config.PGPort,config.PGDatabase)
+
+  return &ConfigResult{PGUrl: pgUrl,Port: config.Port},nil
 }
 
 func GetPasetoConfig()(*PasetoConfig,error){
