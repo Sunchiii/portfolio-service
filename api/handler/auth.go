@@ -45,6 +45,7 @@ func (authdb *AuthHandler) Login(c *gin.Context){
   token,err := middleware.GenerateToken(strconv.Itoa(int(userdb.ID)))
   if err != nil{
     errMsg := utils.InternalServerError("something wrong in server")
+    log.Println(err)
     c.JSON(errMsg.Status,errMsg.Message)
     return
   }

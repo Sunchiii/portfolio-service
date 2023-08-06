@@ -33,6 +33,7 @@ func main(){
   // initial ginEngin
   r := gin.Default()
   r.Use(middleware.ContextWithTimeOut())
+  r.GET("/ping",func(ctx *gin.Context) {ctx.JSON(http.StatusOK,"pong")})
 
   routes.UserRoutes(r,db)
   routes.ArticleRoutes(r,db)

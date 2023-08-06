@@ -11,7 +11,8 @@ import (
 
 func AuthMidleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-    tokenString := c.GetHeader("Authorization")
+    baererToken := c.GetHeader("Authorization")
+    tokenString := baererToken[7:]
     if tokenString == ""{
       errMsg := utils.UnauthorizedError("token not found")
       c.JSON(errMsg.Status,errMsg.Message)
@@ -59,7 +60,7 @@ func GenerateToken(userId string) (string, error) {
 		NotBefore:  now,
 	}
 
-	// custome claim
+	// // custome claim
 	jsonToken.Set("data", pasetoConfig.SignatureKey)
 	flooter := "signature footer"
 
