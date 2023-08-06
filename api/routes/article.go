@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sunchiii/portfolio-service/api/handler"
+	"github.com/sunchiii/portfolio-service/api/middleware"
 	"github.com/sunchiii/portfolio-service/pkg/database"
 )
 
@@ -13,13 +14,18 @@ func ArticleRoutes(route *gin.Engine,db *database.DB){
   if err != nil{
     log.Fatal("can't connect handler",err)
   }
-  v1 := route.Group("/v1")
+  v1x := route.Group("/v1")
+  v1y := route.Group("/v1")
+  v1y.Use(middleware.AuthMidleware())
   {
-    v1.GET("/articles",articlesHandler.GetArticles)
-    v1.GET("/article/:id",articlesHandler.GetArticle)
-    v1.POST("/article",articlesHandler.CreateAtricle)
-    v1.PUT("/article/:id", articlesHandler.UpdateArticle)
-    v1.DELETE("/article/:id", articlesHandler.DeleteArticle)
+    v1x.GET("/articles",articlesHandler.GetArticles)
+    v1x.GET("/article/:id",articlesHandler.GetArticle)
+  }
+
+  {
+    v1y.POST("/article",articlesHandler.CreateAtricle)
+    v1y.PUT("/article/:id", articlesHandler.UpdateArticle)
+    v1y.DELETE("/article/:id", articlesHandler.DeleteArticle)
   }
 }
 
