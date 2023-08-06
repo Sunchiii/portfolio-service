@@ -18,6 +18,7 @@ func ArticleRoutes(route *gin.Engine,db *database.DB){
     v1.GET("/articles",articlesHandler.GetArticles)
     v1.GET("/article/:id",articlesHandler.GetArticle)
     v1.POST("/article",articlesHandler.CreateAtricle)
+    v1.PUT("/article/:id", articlesHandler.UpdateArticle)
   }
 }
 

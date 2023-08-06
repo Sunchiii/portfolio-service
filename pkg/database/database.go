@@ -237,3 +237,21 @@ func (db *DB) GetArticle(_id string) (*models.Article, error) {
 
   return &article,nil
 }
+
+func (db *DB) UpdateArticle(article *models.Article) error{
+  sqlStatement := `UPDATE "article" SET title = $2, description = $3, data = $4 WHERE id = $1`
+  // prepare sql statement
+  stmt,err := db.Prepare(sqlStatement)
+  if err != nil{
+    return err
+  }
+  defer stmt.Close()
+
+  // execute statement 
+  _, err = stmt.Exec(article.ID, article.Title, article.Description, article.Data)
+  if err != nil{
+    return err
+  }
+  return nil
+}
+
