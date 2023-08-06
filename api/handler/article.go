@@ -136,7 +136,7 @@ func (articledb ArticleHandler) UpdateArticle(c *gin.Context) {
 		return
 	}
 	// Return a success message
-	c.JSON(http.StatusCreated, gin.H{"message": "User created successfully"})
+	c.JSON(http.StatusCreated, gin.H{"message": "Article created successfully"})
 }
 
 
