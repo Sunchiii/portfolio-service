@@ -37,13 +37,7 @@ func main(){
   // initial ginEngin
   r := gin.Default()
 
-  // Define a limit rate to 4 requests per hour.
-	// rate, err := limiter.NewRateFromFormatted("5-S")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// 	return
-	// }
-
+  // Define a limit rate to times requests per second.
   rate := limiter.Rate{
     Period: 1 * time.Second,
     Limit:  5,
