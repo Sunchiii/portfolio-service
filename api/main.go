@@ -11,10 +11,14 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sunchiii/portfolio-service/api/middleware"
+	stdmdw "github.com/sunchiii/portfolio-service/api/middleware"
 	"github.com/sunchiii/portfolio-service/api/routes"
 	"github.com/sunchiii/portfolio-service/config"
 	"github.com/sunchiii/portfolio-service/pkg/database"
+  limiter "github.com/ulule/limiter/v3"
+  mgin "github.com/ulule/limiter/v3/drivers/middleware/gin"
+  "github.com/ulule/limiter/v3/drivers/store/memory"
+
 )
 
 func main(){
@@ -32,7 +36,26 @@ func main(){
   }
   // initial ginEngin
   r := gin.Default()
-  r.Use(middleware.ContextWithTimeOut())
+
+  // Define a limit rate to 4 requests per hour.
+	rate, err := limiter.NewRateFromFormatted("5-S")
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+  // create limit store
+  store := memory.NewStoreWithOptions(limiter.StoreOptions{
+    MaxRetry: 3,
+  })
+
+  // Create a new middleware with the limiter instance.
+  limitRequest := mgin.NewMiddleware(limiter.New(store, rate))
+
+
+  r.ForwardedByClientIP = true
+  r.Use(limitRequest)
+  r.Use(stdmdw.ContextWithTimeOut())
   r.GET("/ping",func(ctx *gin.Context) {ctx.JSON(http.StatusOK,"pong")})
 
   routes.UserRoutes(r,db)
