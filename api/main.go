@@ -38,11 +38,16 @@ func main(){
   r := gin.Default()
 
   // Define a limit rate to 4 requests per hour.
-	rate, err := limiter.NewRateFromFormatted("5-S")
-	if err != nil {
-		log.Fatal(err)
-		return
-	}
+	// rate, err := limiter.NewRateFromFormatted("5-S")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// 	return
+	// }
+
+  rate := limiter.Rate{
+    Period: 1 * time.Second,
+    Limit:  5,
+  }
 
   // create limit store
   store := memory.NewStoreWithOptions(limiter.StoreOptions{
