@@ -70,7 +70,7 @@ func (db *DB) UpdateUser(user *models.User) error{
 }
 
 func (db *DB) GetUsers() ([]*models.User, error) {
-	sqlStatement := `SELECT id, article_id, username, password, created_at FROM "user"`
+	sqlStatement := `SELECT id, username, password, created_at FROM "user"`
 	rows, err := db.Query(sqlStatement)
 	if err != nil {
 		return nil, err
@@ -100,7 +100,7 @@ func (db *DB) GetUser(_id string) (*models.User, error) {
   }
   var user models.User
   // Prepare the SQL statement
-  stmt,err := db.Prepare(`SELECT id, article_id, username,password,created_at FROM "user" WHERE id = $1`)
+  stmt,err := db.Prepare(`SELECT id, username,password,created_at FROM "user" WHERE id = $1`)
   if err != nil{
     log.Println(err)
     return nil,err
@@ -121,7 +121,7 @@ func (db *DB) GetUser(_id string) (*models.User, error) {
 func (db *DB) GetUserByUsername(_username , _password string) (*models.User, error) {
   var user models.User
   // Prepare the SQL statement
-  sqlStatement := `SELECT id, article_id, username, password,created_at FROM "user" WHERE username = $1 AND password = $2`
+  sqlStatement := `SELECT id, username, password,created_at FROM "user" WHERE username = $1 AND password = $2`
 
   // Execute the query and retrieve the user data
   row := db.QueryRow(sqlStatement,_username,_password)

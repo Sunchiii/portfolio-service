@@ -1,6 +1,6 @@
 -- Create the user table
 CREATE TABLE IF NOT EXISTS "user" (
-  id SERIAL PRIMARY KEY,
+  id BIGSERIAL PRIMARY KEY,
   username VARCHAR,
   password VARCHAR,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS "user" (
 
 -- Create the article table
 CREATE TABLE IF NOT EXISTS article (
-  id SERIAL PRIMARY KEY,
+  id BIGSERIAL PRIMARY KEY,
   title VARCHAR,
   description VARCHAR,
   image_exam TEXT,
@@ -17,9 +17,5 @@ CREATE TABLE IF NOT EXISTS article (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-ALTER TABLE article ADD COLUMN user_id SERIAL REFERENCES "user" (id);
-ALTER TABLE "user" ADD COLUMN article_id SERIAL REFERENCES article (id);
-
-ALTER TABLE article ALTER COLUMN user_id DROP NOT NULL;
-ALTER TABLE "user" ALTER COLUMN article_id DROP NOT NULL;
+ALTER TABLE article ADD COLUMN user_id BIGSERIAL REFERENCES "user" (id);
 
