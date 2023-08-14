@@ -11,12 +11,15 @@ CREATE TABLE IF NOT EXISTS article (
   id SERIAL PRIMARY KEY,
   title VARCHAR,
   description VARCHAR,
-  imageExam TEXT,
+  image_exam TEXT,
   article_type VARCHAR,
   data JSON,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-ALTER TABLE article ADD COLUMN userId SERIAL REFERENCES "user" (id);
+ALTER TABLE article ADD COLUMN user_id SERIAL REFERENCES "user" (id);
 ALTER TABLE "user" ADD COLUMN article_id SERIAL REFERENCES article (id);
+
+ALTER TABLE article ALTER COLUMN user_id DROP NOT NULL;
+ALTER TABLE "user" ALTER COLUMN article_id DROP NOT NULL;
 
