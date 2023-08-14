@@ -2,36 +2,19 @@ package database
 
 import (
 	"database/sql"
-	"encoding/json"
 	"log"
 	"strconv"
-	"time"
 
 	_ "github.com/lib/pq"
 	"github.com/sunchiii/portfolio-service/api/models"
 )
-
-type User struct {
-	ID        int64     `json:"id"`
-	Username  string    `json:"username"`
-	Password  string    `json:"password"`
-	CreatedAt time.Time `json:"created_at"`
-}
-
-type Article struct {
-	ID          int64           `json:"id"`
-	Title       string          `json:"title"`
-	Description string          `json:"description"`
-	Data        json.RawMessage `json:"data"`
-	CreatedAt   time.Time       `json:"created_at"`
-}
 
 type DB struct {
 	*sql.DB
 }
 
 type ArticlesResponse struct {
-	Articles []*Article `json:"articles"`
+	Articles []*models.Article `json:"articles"`
 	Meta     Meta       `json:"meta"`
 }
 
@@ -86,7 +69,7 @@ func (db *DB) UpdateUser(user *models.User) error{
   return nil
 }
 
-func (db *DB) GetUsers() ([]*User, error) {
+func (db *DB) GetUsers() ([]*models.User, error) {
 	sqlStatement := `SELECT id, username, password, created_at FROM "user"`
 	rows, err := db.Query(sqlStatement)
 	if err != nil {
@@ -94,9 +77,9 @@ func (db *DB) GetUsers() ([]*User, error) {
 	}
 	defer rows.Close()
 
-	users := []*User{}
+	users := []*models.User{}
 	for rows.Next() {
-		var user User
+		var user models.User
 		err := rows.Scan(&user.ID, &user.Username, &user.Password, &user.CreatedAt)
 		if err != nil {
 			return nil, err
@@ -109,13 +92,13 @@ func (db *DB) GetUsers() ([]*User, error) {
 
 	return users, nil
 }
-func (db *DB) GetUser(_id string) (*User, error) {
+func (db *DB) GetUser(_id string) (*models.User, error) {
   // convert id string to int
   id,err := strconv.Atoi(_id)
   if err != nil{
     return nil,err
   }
-  var user User
+  var user models.User
   // Prepare the SQL statement
   stmt,err := db.Prepare(`SELECT id, username,password,created_at FROM "user" WHERE id = $1`)
   if err != nil{
@@ -135,8 +118,8 @@ func (db *DB) GetUser(_id string) (*User, error) {
 }
 
 
-func (db *DB) GetUserByUsername(_username , _password string) (*User, error) {
-  var user User
+func (db *DB) GetUserByUsername(_username , _password string) (*models.User, error) {
+  var user models.User
   // Prepare the SQL statement
   sqlStatement := `SELECT id, username, password,created_at FROM "user" WHERE username = $1 AND password = $2`
 
@@ -206,9 +189,9 @@ func (db *DB) GetArticles(page int, perPage int) (*ArticlesResponse, error) {
 	}
 	defer rows.Close()
 
-	articles := []*Article{}
+	articles := []*models.Article{}
 	for rows.Next() {
-		var article Article
+		var article models.Article
 		err := rows.Scan(&article.ID, &article.Title, &article.Description, &article.Data, &article.CreatedAt)
 		if err != nil {
 			return nil, err
