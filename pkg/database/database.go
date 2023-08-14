@@ -70,7 +70,7 @@ func (db *DB) UpdateUser(user *models.User) error{
 }
 
 func (db *DB) GetUsers() ([]*models.User, error) {
-	sqlStatement := `SELECT id, username, password, created_at FROM "user"`
+	sqlStatement := `SELECT id, article_id, username, password, created_at FROM "user"`
 	rows, err := db.Query(sqlStatement)
 	if err != nil {
 		return nil, err
@@ -100,7 +100,7 @@ func (db *DB) GetUser(_id string) (*models.User, error) {
   }
   var user models.User
   // Prepare the SQL statement
-  stmt,err := db.Prepare(`SELECT id, username,password,created_at FROM "user" WHERE id = $1`)
+  stmt,err := db.Prepare(`SELECT id, article_id, username,password,created_at FROM "user" WHERE id = $1`)
   if err != nil{
     log.Println(err)
     return nil,err
@@ -121,7 +121,7 @@ func (db *DB) GetUser(_id string) (*models.User, error) {
 func (db *DB) GetUserByUsername(_username , _password string) (*models.User, error) {
   var user models.User
   // Prepare the SQL statement
-  sqlStatement := `SELECT id, username, password,created_at FROM "user" WHERE username = $1 AND password = $2`
+  sqlStatement := `SELECT id, article_id, username, password,created_at FROM "user" WHERE username = $1 AND password = $2`
 
   // Execute the query and retrieve the user data
   row := db.QueryRow(sqlStatement,_username,_password)
@@ -153,10 +153,10 @@ func (db *DB) DeleteUser(_id string) error{
 
 func (db *DB) CreateArticle(article *models.Article) error {
 	sqlStatement := `
-		INSERT INTO "article" (title, description, data, created_at)
+		INSERT INTO "article" (user_id, image_exam , article_type,title, description, data, created_at)
 		VALUES ($1, $2, $3, $4)
 		RETURNING id`
-	err := db.QueryRow(sqlStatement, article.Title, article.Description, article.Data, article.CreatedAt).Scan(&article.ID)
+	err := db.QueryRow(sqlStatement,article.UserId,article.ImageExam,article.ArticleType, article.Title, article.Description, article.Data, article.CreatedAt).Scan(&article.ID)
 	if err != nil {
 		return err
 	}
@@ -179,7 +179,7 @@ func (db *DB) GetArticles(page int, perPage int) (*ArticlesResponse, error) {
 
 	// Get articles for the requested page
 	sqlStatement = `
-		SELECT id, title, description, data, created_at
+		SELECT id,user_id, image_exam, artcle_type, title, description, data, created_at
 		FROM "article"
 		ORDER BY created_at DESC
 		LIMIT $1 OFFSET $2`
@@ -192,7 +192,7 @@ func (db *DB) GetArticles(page int, perPage int) (*ArticlesResponse, error) {
 	articles := []*models.Article{}
 	for rows.Next() {
 		var article models.Article
-		err := rows.Scan(&article.ID, &article.Title, &article.Description, &article.Data, &article.CreatedAt)
+		err := rows.Scan(&article.ID,&article.UserId,&article.ImageExam,&article.ArticleType, &article.Title, &article.Description, &article.Data, &article.CreatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -221,7 +221,7 @@ func (db *DB) GetArticles(page int, perPage int) (*ArticlesResponse, error) {
 func (db *DB) GetArticle(_id string) (*models.Article, error) {
   var article models.Article
   // Prepare the SQL statement
-  stmt,err := db.Prepare(`SELECT title, description,data,created_at FROM "article" WHERE id = $1`)
+  stmt,err := db.Prepare(`SELECT title,user_id, image_exam, article_type, description,data,created_at FROM "article" WHERE id = $1`)
   if err != nil{
     log.Println(err)
     return nil,err
@@ -239,7 +239,7 @@ func (db *DB) GetArticle(_id string) (*models.Article, error) {
 }
 
 func (db *DB) UpdateArticle(article *models.Article) error{
-  sqlStatement := `UPDATE "article" SET title = $2, description = $3, data = $4 WHERE id = $1`
+  sqlStatement := `UPDATE "article" SET title = $2, description = $3, data = $4, user_id = $5, image_exam = $6, article_type = $7 WHERE id = $1`
   // prepare sql statement
   stmt,err := db.Prepare(sqlStatement)
   if err != nil{
@@ -248,7 +248,7 @@ func (db *DB) UpdateArticle(article *models.Article) error{
   defer stmt.Close()
 
   // execute statement 
-  _, err = stmt.Exec(article.ID, article.Title, article.Description, article.Data)
+  _, err = stmt.Exec(article.ID, article.Title, article.Description, article.Data,article.UserId,article.ImageExam, article.ArticleType)
   if err != nil{
     return err
   }
