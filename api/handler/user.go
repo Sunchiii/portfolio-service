@@ -5,10 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/sunchiii/portfolio-service/api/models"
 	"github.com/sunchiii/portfolio-service/pkg/database"
 	"github.com/sunchiii/portfolio-service/pkg/utils"
@@ -32,10 +30,8 @@ func (users *UserHandler) CreateUserHandler(c *gin.Context) {
 
 	// prepare data befor insert to database
 	newUser := models.User{
-		ID:        int64(uuid.New().ID()),
 		Username:  user.Username,
 		Password:  user.Password,
-		CreatedAt: time.Now(),
 	}
 
 	// insert data to database

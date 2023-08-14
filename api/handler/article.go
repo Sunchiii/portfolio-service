@@ -34,11 +34,12 @@ func (articledb ArticleHandler) CreateAtricle(c *gin.Context) {
 
 	// prepare newdata of article
 	newArticle := models.Article{
-		ID:          int64(uuid.New().ID()),
 		Title:       article.Title,
 		Description: article.Description,
 		Data:        article.Data,
-		CreatedAt:   time.Now(),
+    UserId: article.UserId,
+    ImageExam: article.ImageExam,
+    ArticleType: article.ArticleType,
 	}
 
 	// call function database ti create new article
