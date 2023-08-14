@@ -1,2 +1,2 @@
-drop table user;
-drop table article;
+DROP TABLE article CASCADE;
+DROP TABLE "user" CASCADE;
