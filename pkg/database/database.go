@@ -179,7 +179,7 @@ func (db *DB) GetArticles(page int, perPage int) (*ArticlesResponse, error) {
 
 	// Get articles for the requested page
 	sqlStatement = `
-		SELECT id,user_id, image_exam, artcle_type, title, description, data, created_at
+		SELECT id,user_id, image_exam, article_type, title, description, data, created_at
 		FROM "article"
 		ORDER BY created_at DESC
 		LIMIT $1 OFFSET $2`

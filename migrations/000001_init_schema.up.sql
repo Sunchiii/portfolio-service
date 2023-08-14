@@ -1,5 +1,5 @@
 -- Create the user table
-CREATE TABLE "user" (
+CREATE TABLE IF NOT EXISTS "user" (
   id SERIAL PRIMARY KEY,
   username VARCHAR,
   password VARCHAR,
@@ -7,7 +7,7 @@ CREATE TABLE "user" (
 );
 
 -- Create the article table
-CREATE TABLE article (
+CREATE TABLE IF NOT EXISTS article (
   id SERIAL PRIMARY KEY,
   title VARCHAR,
   description VARCHAR,
