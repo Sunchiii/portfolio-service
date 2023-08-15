@@ -55,7 +55,7 @@ func main(){
   r.ForwardedByClientIP = true
   r.Use(limitRequest)
   r.Use(stdmdw.ContextWithTimeOut())
-  r.Use(stdmdw.CorsMiddleware())
+  r.Use(stdmdw.MultiUnblockCors())
   r.GET("/ping",func(ctx *gin.Context) {ctx.JSON(http.StatusOK,"pong")})
 
   routes.UserRoutes(r,db)
