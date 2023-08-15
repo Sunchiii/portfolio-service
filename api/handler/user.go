@@ -71,10 +71,8 @@ func (users *UserHandler) UpdateUserHandler(c *gin.Context) {
 
 	// prepare data befor insert to database
 	newUser := models.User{
-		ID:        int64(id),
 		Username:  user.Username,
 		Password:  user.Password,
-		CreatedAt: oldUser.CreatedAt,
 	}
 
 	if user.Username == "" {

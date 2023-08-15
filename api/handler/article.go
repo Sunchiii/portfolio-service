@@ -4,10 +4,8 @@ import (
 	"log"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/sunchiii/portfolio-service/api/models"
 	"github.com/sunchiii/portfolio-service/pkg/database"
 	"github.com/sunchiii/portfolio-service/pkg/utils"
@@ -21,7 +19,7 @@ func NewArticleHandler(db *database.DB) (ArticleHandler, error) {
 	return ArticleHandler{Db: db}, nil
 }
 
-func (articledb ArticleHandler) CreateAtricle(c *gin.Context) {
+func (articledb *ArticleHandler) CreateAtricle(c *gin.Context) {
 	// prepare article object
 	var article models.Article
 
@@ -46,6 +44,7 @@ func (articledb ArticleHandler) CreateAtricle(c *gin.Context) {
 	err := articledb.Db.CreateArticle(&newArticle)
 	if err != nil {
 		errMsg := utils.InternalServerError("something wrong in server side")
+    log.Println(err)
 		c.JSON(errMsg.Status, errMsg.Message)
 		return
 	}
@@ -53,7 +52,7 @@ func (articledb ArticleHandler) CreateAtricle(c *gin.Context) {
 	c.JSON(http.StatusCreated, gin.H{"message": "Article created successfully"})
 }
 
-func (articledb ArticleHandler) GetArticles(c *gin.Context) {
+func (articledb *ArticleHandler) GetArticles(c *gin.Context) {
   page := c.DefaultQuery("page","1")
   limit := c.DefaultQuery("limit","10")
 
@@ -72,7 +71,7 @@ func (articledb ArticleHandler) GetArticles(c *gin.Context) {
 	c.JSON(http.StatusOK, article)
 }
 
-func (articledb ArticleHandler) GetArticle(c *gin.Context) {
+func (articledb *ArticleHandler) GetArticle(c *gin.Context) {
 	// Get the user ID from the request parameters
 	articleID := c.Param("id")
 	// Retrieve the user from the database or any other data source
@@ -90,7 +89,7 @@ func (articledb ArticleHandler) GetArticle(c *gin.Context) {
 }
 
 
-func (articledb ArticleHandler) UpdateArticle(c *gin.Context) {
+func (articledb *ArticleHandler) UpdateArticle(c *gin.Context) {
 	// get id from param
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -103,6 +102,7 @@ func (articledb ArticleHandler) UpdateArticle(c *gin.Context) {
 	// Parse the request body to get the user data
 	var article models.Article
 	if err := c.ShouldBindJSON(&article); err != nil {
+    log.Println(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -111,17 +111,21 @@ func (articledb ArticleHandler) UpdateArticle(c *gin.Context) {
 	oldArticle, err := articledb.Db.GetArticle(strconv.Itoa(id))
 	if err != nil {
 		errMsg := utils.BadRequestError("does't exit")
+    log.Println(err)
 		c.JSON(errMsg.Status, errMsg.Message)
 		return
 	}
 
+
 	// prepare data befor insert to database
 	newArticle := models.Article{
-		ID:        int64(id),
     Title: article.Title,
     Description: article.Description,
     Data: article.Data,
-    CreatedAt: time.Now(),
+    ImageExam: article.ImageExam,
+    ArticleType: article.ArticleType,
+    UserId: oldArticle.UserId,
+    ID: oldArticle.ID,
 	}
 
 	if article.Title == "" {
@@ -130,9 +134,16 @@ func (articledb ArticleHandler) UpdateArticle(c *gin.Context) {
 	if article.Description == "" {
 		newArticle.Description = oldArticle.Description
 	}
+  if article.ImageExam == ""{
+    newArticle.ImageExam = oldArticle.ImageExam
+  }
+  if article.ArticleType == ""{
+    newArticle.ArticleType = oldArticle.ArticleType
+  }
 	if len(article.Data) <=0 {
 		newArticle.Data = oldArticle.Data
 	}
+
 
 	// insert data to database
 	err = articledb.Db.UpdateArticle(&newArticle)

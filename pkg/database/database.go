@@ -153,10 +153,10 @@ func (db *DB) DeleteUser(_id string) error{
 
 func (db *DB) CreateArticle(article *models.Article) error {
 	sqlStatement := `
-		INSERT INTO "article" (user_id, image_exam , article_type,title, description, data, created_at)
-		VALUES ($1, $2, $3, $4)
+		INSERT INTO article (user_id, image_exam , article_type,title, description, data)
+		VALUES ($1, $2, $3, $4,$5,$6)
 		RETURNING id`
-	err := db.QueryRow(sqlStatement,article.UserId,article.ImageExam,article.ArticleType, article.Title, article.Description, article.Data, article.CreatedAt).Scan(&article.ID)
+	err := db.QueryRow(sqlStatement,article.UserId,article.ImageExam,article.ArticleType, article.Title, article.Description, article.Data).Scan(&article.ID)
 	if err != nil {
 		return err
 	}
@@ -166,7 +166,7 @@ func (db *DB) CreateArticle(article *models.Article) error {
 
 func (db *DB) GetArticles(page int, perPage int) (*ArticlesResponse, error) {
 	// Get total count of articles
-	sqlStatement := `SELECT COUNT(*) FROM "article"`
+	sqlStatement := `SELECT COUNT(*) FROM article`
 	var totalCount int
 	err := db.QueryRow(sqlStatement).Scan(&totalCount)
 	if err != nil {
@@ -180,7 +180,7 @@ func (db *DB) GetArticles(page int, perPage int) (*ArticlesResponse, error) {
 	// Get articles for the requested page
 	sqlStatement = `
 		SELECT id,user_id, image_exam, article_type, title, description, data, created_at
-		FROM "article"
+		FROM article
 		ORDER BY created_at DESC
 		LIMIT $1 OFFSET $2`
 	rows, err := db.Query(sqlStatement, perPage, offset)
@@ -221,7 +221,7 @@ func (db *DB) GetArticles(page int, perPage int) (*ArticlesResponse, error) {
 func (db *DB) GetArticle(_id string) (*models.Article, error) {
   var article models.Article
   // Prepare the SQL statement
-  stmt,err := db.Prepare(`SELECT title,user_id, image_exam, article_type, description,data,created_at FROM "article" WHERE id = $1`)
+  stmt,err := db.Prepare(`SELECT id,title,user_id, image_exam, article_type, description,data,created_at FROM article WHERE id = $1`)
   if err != nil{
     log.Println(err)
     return nil,err
@@ -229,7 +229,7 @@ func (db *DB) GetArticle(_id string) (*models.Article, error) {
   defer stmt.Close()
 
   // Execute the query and retrieve the user data
-  err = stmt.QueryRow(_id).Scan(&article.Title,&article.Description,&article.Data,&article.CreatedAt)
+  err = stmt.QueryRow(_id).Scan(&article.ID,&article.Title,&article.UserId,&article.ImageExam,&article.ArticleType,&article.Description,&article.Data,&article.CreatedAt)
 	if err != nil {
     log.Println(err)
 		return nil, err
@@ -239,7 +239,7 @@ func (db *DB) GetArticle(_id string) (*models.Article, error) {
 }
 
 func (db *DB) UpdateArticle(article *models.Article) error{
-  sqlStatement := `UPDATE "article" SET title = $2, description = $3, data = $4, user_id = $5, image_exam = $6, article_type = $7 WHERE id = $1`
+  sqlStatement := `UPDATE article SET title = $2, description = $3, data = $4, user_id = $5, image_exam = $6, article_type = $7 WHERE id = $1`
   // prepare sql statement
   stmt,err := db.Prepare(sqlStatement)
   if err != nil{
@@ -248,7 +248,7 @@ func (db *DB) UpdateArticle(article *models.Article) error{
   defer stmt.Close()
 
   // execute statement 
-  _, err = stmt.Exec(article.ID, article.Title, article.Description, article.Data,article.UserId,article.ImageExam, article.ArticleType)
+  _, err = stmt.Exec(article.ID,article.Title, article.Description, article.Data,article.UserId,article.ImageExam, article.ArticleType)
   if err != nil{
     return err
   }
@@ -257,7 +257,7 @@ func (db *DB) UpdateArticle(article *models.Article) error{
 
 func (db *DB) DeleteArticle(_id string) error{
   // Prepare a SQL statement to delete the user with the given ID
-  stmt, err := db.Prepare(`DELETE FROM "article" WHERE id = $1`)
+  stmt, err := db.Prepare(`DELETE FROM article WHERE id = $1`)
   if err != nil {
     return err
   }
