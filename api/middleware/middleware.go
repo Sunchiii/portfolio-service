@@ -36,7 +36,7 @@ func CorsMiddleware() gin.HandlerFunc {
 func MultiUnblockCors() gin.HandlerFunc {
 	config := cors.DefaultConfig()
 	config.AllowOrigins = []string{"http://localhost:3000", "http://localhost:3001"}
-	config.AllowMethods = []string{"GET", "POST", "PUT", "DELETE"}
-	config.AllowHeaders = []string{"Origin", "Authorization", "Content-Type"}
+	config.AllowMethods = []string{"GET", "POST", "PUT","PATCH", "DELETE","OPTIONS"}
+	config.AllowHeaders = []string{"Origin", "Authorization", "Content-Type","Content-Length","Accept-Encoding","X-CSRF-Token"}
   return cors.New(config)
 }

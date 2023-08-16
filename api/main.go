@@ -45,7 +45,7 @@ func main(){
 
   // create limit store
   store := memory.NewStoreWithOptions(limiter.StoreOptions{
-    MaxRetry: 3,
+    MaxRetry: 5,
   })
 
   // Create a new middleware with the limiter instance.
