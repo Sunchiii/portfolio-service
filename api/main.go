@@ -46,6 +46,7 @@ func main(){
   // create limit store
   store := memory.NewStoreWithOptions(limiter.StoreOptions{
     MaxRetry: 5,
+    CleanUpInterval: time.Duration(time.Minute*10),
   })
 
   // Create a new middleware with the limiter instance.
