@@ -45,7 +45,7 @@ func main(){
 
   // create limit store
   store := memory.NewStoreWithOptions(limiter.StoreOptions{
-    MaxRetry: 5,
+    MaxRetry: 3,
     CleanUpInterval: time.Duration(time.Minute*10),
   })
 
