@@ -58,9 +58,13 @@ func (articledb *ArticleHandler) GetArticles(c *gin.Context) {
 
   // limit query range
   newLimit,_ := strconv.Atoi(limit)
+  newPage ,_ := strconv.Atoi(page)
   if newLimit >30{
     limit = "30"
   }
+  if newLimit <10{ limit = "10"}
+  // limit min query range
+  if newPage <1{page = "1"}
 
   // convert page and limit to int
   pageValue, _ := strconv.Atoi(page)
