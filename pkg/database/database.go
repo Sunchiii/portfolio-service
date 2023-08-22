@@ -7,7 +7,37 @@ import (
 
 	_ "github.com/lib/pq"
 	"github.com/sunchiii/portfolio-service/api/models"
+  "github.com/appleboy/go-fcm"
 )
+
+func sendMassage(massageData string) error{
+  simpleApiKey := "AAAAiiGCZa0:APA91bHfAjCiGI-K4xHoqnGkD4EF55lrqJexKCzqft3r6VIUQn8f5xaF7lpC6kMuz-pOjLdvTHKEjmU87UZcacsINnDMNjhnt9EWLy1uZmAnYUKBp0vWjK1Gb-hqASKkR6CUsBjM5-Y4"
+  // Create the message to be sent.
+	msg := &fcm.Message{
+		To: "sample_device_token",
+		Data: map[string]interface{}{
+			"internal server": massageData,
+		},
+		Notification: &fcm.Notification{
+			Title: "error in database",
+			Body: massageData,
+		},
+	}
+
+  // Create a FCM client to send the message.
+	client, err := fcm.NewClient(simpleApiKey)
+	if err != nil {
+    return err
+	}
+
+  // Send the message and receive the response without retries.
+	_ , err = client.Send(msg)
+	if err != nil {
+    return err
+	}
+
+  return nil
+}
 
 type DB struct {
 	*sql.DB
@@ -46,6 +76,7 @@ func (db *DB) CreateUser(user *models.User) error {
 		RETURNING id`
 	err := db.QueryRow(sqlStatement,user.ID, user.Username, user.Password,user.CreatedAt).Scan(&user.ID)
 	if err != nil {
+    sendMassage("can't create user: "+err.Error())
 		return err
 	}
 
@@ -57,6 +88,7 @@ func (db *DB) UpdateUser(user *models.User) error{
   // prepare sql statement
   stmt,err := db.Prepare(sqlStatement)
   if err != nil{
+    sendMassage("can't update user: "+err.Error())
     return err
   }
   defer stmt.Close()
@@ -64,6 +96,7 @@ func (db *DB) UpdateUser(user *models.User) error{
   // execute statement 
   _, err = stmt.Exec(user.ID,user.Username,user.Password)
   if err != nil{
+    sendMassage("can't update user: "+err.Error())
     return err
   }
   return nil
@@ -73,6 +106,7 @@ func (db *DB) GetUsers() ([]*models.User, error) {
 	sqlStatement := `SELECT id, username, password, created_at FROM "user"`
 	rows, err := db.Query(sqlStatement)
 	if err != nil {
+    sendMassage("can't get user: "+err.Error())
 		return nil, err
 	}
 	defer rows.Close()
@@ -102,6 +136,7 @@ func (db *DB) GetUser(_id string) (*models.User, error) {
   // Prepare the SQL statement
   stmt,err := db.Prepare(`SELECT id, username,password,created_at FROM "user" WHERE id = $1`)
   if err != nil{
+    sendMassage("can't get user: "+err.Error())
     log.Println(err)
     return nil,err
   }
@@ -128,6 +163,7 @@ func (db *DB) GetUserByUsername(_username , _password string) (*models.User, err
 
   // recieve the user data
   if err := row.Scan(&user.ID,&user.Username,&user.Password,&user.CreatedAt); err != nil{
+    sendMassage("can't get user: "+err.Error())
     return nil,err
   }
 
@@ -139,6 +175,7 @@ func (db *DB) DeleteUser(_id string) error{
   // Prepare a SQL statement to delete the user with the given ID
   stmt, err := db.Prepare(`DELETE FROM "user" WHERE id = $1`)
   if err != nil {
+    sendMassage("can't delete user: "+err.Error())
     return err
   }
   defer stmt.Close()
