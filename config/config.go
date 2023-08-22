@@ -2,9 +2,9 @@ package config
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
+	"strconv"
 
-	"gopkg.in/yaml.v3"
 )
 
 type Config struct{
@@ -29,35 +29,24 @@ type PasetoConfig struct{
 
 
 func NewConfig() (*ConfigResult,error){
-  // read the env.yaml file
-  data ,err := ioutil.ReadFile("env.yaml")
-  if err != nil{
-    return nil,err
-  }
+  // pgUrl := fmt.Sprintf(`postgresql://%s:%s@%s:%s/%s?sslmode=disable`,config.PGUser,config.PGPassword,config.PGHost,config.PGPort,config.PGDatabase)
+  pgUrl := fmt.Sprintf(`postgresql://%s:%s@%s:%s/%s?sslmode=disable`,os.Getenv("PG_USER"),
+    os.Getenv("PG_PASSWORD"),
+    os.Getenv("PG_HOST"),os.Getenv("PG_PORT"),
+    os.Getenv("PG_DATABASE"))
 
-  //Parse the YAML data into  a config  struct
-  config := Config{}
-  err = yaml.Unmarshal(data,&config)
-  if err != nil{
-    return nil,err
-  }
+  fmt.Printf(pgUrl)
 
-  pgUrl := fmt.Sprintf(`postgresql://%s:%s@%s:%s/%s?sslmode=disable`,config.PGUser,config.PGPassword,config.PGHost,config.PGPort,config.PGDatabase)
-
-  return &ConfigResult{PGUrl: pgUrl,Port: config.Port},nil
+  return &ConfigResult{PGUrl: pgUrl,Port: os.Getenv("PORT")},nil
 }
 
 func GetPasetoConfig()(*PasetoConfig,error){
-  data, err := ioutil.ReadFile("env.yaml")
-  if err != nil{
+  expHour,err := strconv.Atoi(os.Getenv("TOKEN_EXP"))
+  if err != nil {
     return nil,err
   }
-
-  var pasetoConfig PasetoConfig
-  err = yaml.Unmarshal(data,&pasetoConfig)
-  if err != nil{
-    return nil,err
-  }
-
-  return &pasetoConfig,nil
+  return &PasetoConfig{
+    SignatureKey:os.Getenv("SIGNATURE_KEY"),
+    ExpHour:expHour,
+  },nil
 }
