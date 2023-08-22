@@ -29,13 +29,11 @@ type PasetoConfig struct{
 
 
 func NewConfig() (*ConfigResult,error){
-  // pgUrl := fmt.Sprintf(`postgresql://%s:%s@%s:%s/%s?sslmode=disable`,config.PGUser,config.PGPassword,config.PGHost,config.PGPort,config.PGDatabase)
   pgUrl := fmt.Sprintf(`postgresql://%s:%s@%s:%s/%s?sslmode=disable`,os.Getenv("PG_USER"),
     os.Getenv("PG_PASSWORD"),
     os.Getenv("PG_HOST"),os.Getenv("PG_PORT"),
     os.Getenv("PG_DATABASE"))
 
-  fmt.Printf(pgUrl)
 
   return &ConfigResult{PGUrl: pgUrl,Port: os.Getenv("PORT")},nil
 }
