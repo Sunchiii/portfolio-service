@@ -3,3 +3,9 @@ env.yaml
 
 # make file
 Makefile
+
+# docker compose
+docker-compose.yml
+
+# database backup
+data
