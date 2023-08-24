@@ -201,7 +201,7 @@ func (db *DB) CreateArticle(article *models.Article) error {
 	return nil
 }
 
-func (db *DB) GetArticles(page int, perPage int) (*ArticlesResponse, error) {
+func (db *DB) GetArticles(page int, perPage int, article_type string) (*ArticlesResponse, error) {
 	// Get total count of articles
 	sqlStatement := `SELECT COUNT(*) FROM article`
 	var totalCount int
@@ -218,9 +218,10 @@ func (db *DB) GetArticles(page int, perPage int) (*ArticlesResponse, error) {
 	sqlStatement = `
 		SELECT id,user_id, image_exam, article_type, title, description, data, created_at
 		FROM article
+    WHERE article_type = $3
 		ORDER BY created_at DESC
 		LIMIT $1 OFFSET $2`
-	rows, err := db.Query(sqlStatement, perPage, offset)
+	rows, err := db.Query(sqlStatement, perPage, offset, article_type)
 	if err != nil {
 		return nil, err
 	}
