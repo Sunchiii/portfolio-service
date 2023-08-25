@@ -218,7 +218,7 @@ func (db *DB) GetArticles(page int, perPage int, article_type string) (*Articles
 	sqlStatement = `
 		SELECT id,user_id, image_exam, article_type, title, description, data, created_at
 		FROM article
-    WHERE article_type = $3
+    WHERE ($3 = 'all' OR article_type = $3)
 		ORDER BY created_at DESC
 		LIMIT $1 OFFSET $2`
 	rows, err := db.Query(sqlStatement, perPage, offset, article_type)
